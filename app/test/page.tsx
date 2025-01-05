@@ -1,7 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
+import { Layout, Typography, Card, Button, Progress, Space } from 'antd'
+import { ArrowLeftOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+
+const { Content } = Layout
+const { Title, Text, Paragraph } = Typography
 
 interface Question {
   id: number
@@ -70,6 +76,7 @@ const questions: Question[] = [
 ]
 
 export default function ChakraTest() {
+  const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<{[key: number]: number}>({})
   const [showResults, setShowResults] = useState(false)
@@ -88,9 +95,6 @@ export default function ChakraTest() {
   }
 
   const calculateResults = () => {
-    // 这里添加计算逻辑
-    setShowResults(true)
-    
     // 保存结果到localStorage
     const testResult = {
       lastTest: new Date().toISOString(),
@@ -108,76 +112,111 @@ export default function ChakraTest() {
     }
     
     localStorage.setItem('chakraTestResult', JSON.stringify(testResult))
+    setShowResults(true)
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-4 md:p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-indigo-800">
-          脉轮能量测试
-        </h1>
-
-        {!showResults ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
+    <Layout>
+      <Content style={{ 
+        minHeight: '100vh',
+        padding: '2rem',
+        background: 'linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%)'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <Title 
+            level={1} 
+            style={{ 
+              textAlign: 'center', 
+              marginBottom: '3rem',
+              color: '#4338ca'
+            }}
           >
-            <div className="mb-6">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>问题 {currentQuestion + 1} / {questions.length}</span>
-                <span>完成度 {Math.round((currentQuestion / questions.length) * 100)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-purple-500 to-indigo-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(currentQuestion / questions.length) * 100}%` }}
+            脉轮能量测试
+          </Title>
+
+          {!showResults ? (
+            <Card>
+              <div style={{ marginBottom: '2rem' }}>
+                <Space style={{ width: '100%', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <Text type="secondary">
+                    问题 {currentQuestion + 1} / {questions.length}
+                  </Text>
+                  <Text type="secondary">
+                    完成度 {Math.round((currentQuestion / questions.length) * 100)}%
+                  </Text>
+                </Space>
+                <Progress 
+                  percent={Math.round((currentQuestion / questions.length) * 100)}
+                  showInfo={false}
+                  strokeColor={{
+                    '0%': '#818cf8',
+                    '100%': '#4338ca'
+                  }}
                 />
               </div>
-            </div>
 
-            <h2 className="text-xl font-semibold mb-6 text-gray-800">
-              {questions[currentQuestion].text}
-            </h2>
+              <Title level={4} style={{ marginBottom: '2rem' }}>
+                {questions[currentQuestion].text}
+              </Title>
 
-            <div className="space-y-3">
-              {questions[currentQuestion].options.map((option, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleAnswer(questions[currentQuestion].id, index)}
-                  className="w-full text-left p-4 rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow border border-gray-100"
+              <Space direction="vertical" style={{ width: '100%' }} size="large">
+                {questions[currentQuestion].options.map((option, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button
+                      block
+                      size="large"
+                      onClick={() => handleAnswer(questions[currentQuestion].id, index)}
+                      style={{
+                        height: 'auto',
+                        padding: '1rem',
+                        textAlign: 'left',
+                        whiteSpace: 'normal',
+                        background: 'white'
+                      }}
+                    >
+                      {option}
+                    </Button>
+                  </motion.div>
+                ))}
+              </Space>
+            </Card>
+          ) : (
+            <Card>
+              <div style={{ textAlign: 'center' }}>
+                <CheckCircleOutlined style={{ 
+                  fontSize: '4rem', 
+                  color: '#4338ca',
+                  marginBottom: '1.5rem'
+                }} />
+                <Title level={3} style={{ marginBottom: '1rem' }}>
+                  测试完成！
+                </Title>
+                <Paragraph style={{ marginBottom: '2rem' }}>
+                  感谢你完成脉轮能量测试。根据你的答案，我们为你生成了详细的脉轮分析报告。
+                  你可以在主页查看完整的测试结果和个性化建议。
+                </Paragraph>
+                <Button 
+                  type="primary"
+                  size="large"
+                  onClick={() => router.push('/')}
+                  style={{
+                    background: 'linear-gradient(to right, #818cf8, #4338ca)',
+                    border: 'none',
+                    height: 'auto',
+                    padding: '1.5rem 3rem',
+                  }}
                 >
-                  {option}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
-          >
-            <h2 className="text-2xl font-semibold mb-6 text-indigo-800">测试完成！</h2>
-            <p className="text-gray-700 mb-4">
-              感谢你完成脉轮能量测试。根据你的答案，我们为你生成了详细的脉轮分析报告。
-            </p>
-            <p className="text-gray-700 mb-6">
-              你可以在主页查看完整的测试结果和个性化建议。
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/'}
-              className="w-full py-3 px-6 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-shadow"
-            >
-              返回主页查看结果
-            </motion.button>
-          </motion.div>
-        )}
-      </div>
-    </main>
+                  返回主页查看结果
+                </Button>
+              </div>
+            </Card>
+          )}
+        </div>
+      </Content>
+    </Layout>
   )
 } 

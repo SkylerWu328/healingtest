@@ -1,7 +1,13 @@
 'use client'
 
 import React from 'react'
+import { Layout, Typography, Card, Row, Col, Button, Space, Tag } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+
+const { Content } = Layout
+const { Title, Text, Paragraph } = Typography
 
 interface EssentialOil {
   name: string
@@ -9,6 +15,7 @@ interface EssentialOil {
   benefits: string[]
   usage: string[]
   caution?: string
+  chakra: string
 }
 
 interface ChakraAromatherapy {
@@ -37,7 +44,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '冥想时涂抹于眉心或头顶',
           '与基础油调和按摩'
-        ]
+        ],
+        chakra: '顶轮'
       },
       {
         name: '檀香精油',
@@ -52,7 +60,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '局部按摩',
           '冥想时使用'
-        ]
+        ],
+        chakra: '顶轮'
       }
     ]
   },
@@ -75,7 +84,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '枕头喷洒',
           '浴缸使用',
           '局部按摩'
-        ]
+        ],
+        chakra: '眉心轮'
       },
       {
         name: '天竺葵精油',
@@ -90,7 +100,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '局部按摩',
           '热敷使用'
-        ]
+        ],
+        chakra: '眉心轮'
       }
     ]
   },
@@ -113,7 +124,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '蒸汽吸入',
           '局部按摩'
         ],
-        caution: '孕妇和儿童慎用'
+        caution: '孕妇和儿童慎用',
+        chakra: '喉轮'
       },
       {
         name: '茶树精油',
@@ -128,7 +140,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '漱口使用（稀释）',
           '局部使用'
-        ]
+        ],
+        chakra: '喉轮'
       }
     ]
   },
@@ -150,7 +163,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '局部按摩',
           '浴缸使用'
-        ]
+        ],
+        chakra: '心轮'
       },
       {
         name: '依兰依兰精油',
@@ -165,7 +179,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '局部按摩',
           '个人香水'
-        ]
+        ],
+        chakra: '心轮'
       }
     ]
   },
@@ -187,7 +202,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '清洁用品添加',
           '饮用（食用级）'
-        ]
+        ],
+        chakra: '太阳轮'
       },
       {
         name: '佛手柑精油',
@@ -203,7 +219,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '局部按摩',
           '浴缸使用'
         ],
-        caution: '使用后避免阳光直射'
+        caution: '使用后避免阳光直射',
+        chakra: '太阳轮'
       }
     ]
   },
@@ -225,7 +242,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '局部按摩',
           '浴缸使用'
-        ]
+        ],
+        chakra: '骶轮'
       },
       {
         name: '甜橙精油',
@@ -240,7 +258,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '居室喷洒',
           '清洁用品添加'
-        ]
+        ],
+        chakra: '骶轮'
       }
     ]
   },
@@ -262,7 +281,8 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '局部按摩',
           '冥想时使用'
-        ]
+        ],
+        chakra: '根轮'
       },
       {
         name: '广藿香精油',
@@ -277,115 +297,157 @@ const chakraOils: ChakraAromatherapy[] = [
           '香薰扩香',
           '局部按摩',
           '个人香水'
-        ]
+        ],
+        chakra: '根轮'
       }
     ]
   }
 ]
 
 export default function Aromatherapy() {
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-indigo-800">
-          脉轮精油指南
-        </h1>
-        
-        <div className="space-y-12">
-          {chakraOils.map((chakraSection, index) => (
-            <ChakraSection 
-              key={chakraSection.chakra} 
-              chakraInfo={chakraSection} 
-              index={index}
-            />
-          ))}
-        </div>
-      </div>
-    </main>
-  )
-}
-
-function ChakraSection({ 
-  chakraInfo, 
-  index 
-}: { 
-  chakraInfo: ChakraAromatherapy
-  index: number 
-}) {
-  const colorVariants = {
-    purple: 'from-purple-500 to-purple-600',
-    indigo: 'from-indigo-500 to-indigo-600',
-    blue: 'from-blue-500 to-blue-600',
-    green: 'from-green-500 to-green-600',
-    yellow: 'from-yellow-500 to-yellow-600',
-    orange: 'from-orange-500 to-orange-600',
-    red: 'from-red-500 to-red-600'
-  }
+  const router = useRouter()
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
-    >
-      <div className={`bg-gradient-to-r ${colorVariants[chakraInfo.color as keyof typeof colorVariants]} p-4 rounded-xl text-white mb-6`}>
-        <h2 className="text-2xl font-bold mb-2">{chakraInfo.chakra}</h2>
-        <p>{chakraInfo.description}</p>
-      </div>
+    <Layout>
+      <Content style={{ 
+        minHeight: '100vh',
+        padding: '2rem',
+        background: 'linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%)'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <Space style={{ marginBottom: '2rem' }}>
+            <Button 
+              icon={<ArrowLeftOutlined />}
+              onClick={() => router.push('/')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              返回主页
+            </Button>
+          </Space>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {chakraInfo.oils.map((oil) => (
-          <OilCard key={oil.name} oil={oil} />
-        ))}
-      </div>
-    </motion.section>
-  )
-}
+          <Title 
+            level={1} 
+            style={{ 
+              textAlign: 'center', 
+              marginBottom: '3rem',
+              color: '#4338ca'
+            }}
+          >
+            脉轮精油指南
+          </Title>
 
-function OilCard({ oil }: { oil: EssentialOil }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
-    >
-      <h3 className="text-xl font-semibold mb-3 text-indigo-900">{oil.name}</h3>
-      <p className="text-gray-700 mb-4">{oil.description}</p>
-      
-      <div className="space-y-4">
-        <div>
-          <h4 className="font-medium text-indigo-900 mb-2">功效：</h4>
-          <ul className="space-y-2">
-            {oil.benefits.map((benefit, index) => (
-              <li key={index} className="flex items-center text-gray-600">
-                <span className="text-indigo-500 mr-2">✦</span>
-                {benefit}
-              </li>
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            {chakraOils.map((chakraSection, index) => (
+              <Card
+                key={chakraSection.chakra}
+                title={
+                  <Space align="center">
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: chakraSection.color,
+                    }} />
+                    <Text strong style={{ fontSize: '1.25rem' }}>
+                      {chakraSection.chakra}
+                    </Text>
+                  </Space>
+                }
+                styles={{
+                  header: {
+                    background: 'rgba(255, 255, 255, 0.5)',
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.06)'
+                  }
+                }}
+              >
+                <Paragraph style={{ marginBottom: '2rem' }}>
+                  {chakraSection.description}
+                </Paragraph>
+
+                <Row gutter={[16, 16]}>
+                  {chakraSection.oils.map((oil, oilIndex) => (
+                    <Col key={oil.name} xs={24} sm={24} md={12}>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: oilIndex * 0.1 }}
+                      >
+                        <Card
+                          hoverable
+                          styles={{
+                            body: {
+                              padding: '1.5rem'
+                            }
+                          }}
+                        >
+                          <Title level={4} style={{ marginBottom: '1rem' }}>
+                            {oil.name}
+                          </Title>
+                          <Paragraph style={{ marginBottom: '1rem' }}>
+                            {oil.description}
+                          </Paragraph>
+
+                          <div style={{ marginBottom: '1rem' }}>
+                            <Text strong style={{ display: 'block', marginBottom: '0.5rem' }}>
+                              功效：
+                            </Text>
+                            <Space size={[0, 8]} wrap>
+                              {oil.benefits.map((benefit, index) => (
+                                <Tag
+                                  key={index}
+                                  color="purple"
+                                  style={{ marginBottom: '0.5rem' }}
+                                >
+                                  {benefit}
+                                </Tag>
+                              ))}
+                            </Space>
+                          </div>
+
+                          <div style={{ marginBottom: oil.caution ? '1rem' : 0 }}>
+                            <Text strong style={{ display: 'block', marginBottom: '0.5rem' }}>
+                              使用方法：
+                            </Text>
+                            <Space size={[0, 8]} wrap>
+                              {oil.usage.map((use, index) => (
+                                <Tag
+                                  key={index}
+                                  color="blue"
+                                  style={{ marginBottom: '0.5rem' }}
+                                >
+                                  {use}
+                                </Tag>
+                              ))}
+                            </Space>
+                          </div>
+
+                          {oil.caution && (
+                            <div style={{ marginTop: '1rem' }}>
+                              <Text type="danger" style={{ fontSize: '0.9rem' }}>
+                                ⚠️ 注意：{oil.caution}
+                              </Text>
+                            </div>
+                          )}
+
+                          <div style={{ marginTop: '1rem' }}>
+                            <Text type="secondary">
+                              对应脉轮：{oil.chakra}
+                            </Text>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    </Col>
+                  ))}
+                </Row>
+              </Card>
             ))}
-          </ul>
+          </Space>
         </div>
-
-        <div>
-          <h4 className="font-medium text-indigo-900 mb-2">使用方法：</h4>
-          <ul className="space-y-2">
-            {oil.usage.map((use, index) => (
-              <li key={index} className="flex items-center text-gray-600">
-                <span className="text-green-500 mr-2">•</span>
-                {use}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {oil.caution && (
-          <div className="mt-4">
-            <p className="text-red-600 text-sm flex items-center">
-              <span className="mr-2">⚠️</span>
-              注意：{oil.caution}
-            </p>
-          </div>
-        )}
-      </div>
-    </motion.div>
+      </Content>
+    </Layout>
   )
 } 
