@@ -8,13 +8,16 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.5.2",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "antd": "^5.22.7",
     "framer-motion": "latest",
+    "lucide-react": "^0.469.0",
     "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "latest"
   },
   "devDependencies": {

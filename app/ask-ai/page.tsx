@@ -1,7 +1,14 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { Layout, Typography, Button, Input, Card } from 'antd'
+import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+
+const { Content } = Layout
+const { Title, Paragraph } = Typography
+const { TextArea } = Input
 
 interface Message {
   role: 'user' | 'assistant'
@@ -10,6 +17,7 @@ interface Message {
 }
 
 export default function AskAI() {
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -67,90 +75,133 @@ export default function AskAI() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-4 md:p-8">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-indigo-800">
-          与疗愈导师对话
-        </h1>
+    <Layout>
+      <Content style={{ 
+        padding: '2rem',
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%)'
+      }}>
+        <Button 
+          icon={<ArrowLeft />}
+          onClick={() => router.push('/')}
+          style={{ 
+            marginBottom: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          返回主页
+        </Button>
 
-        {/* 聊天区域 */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl mb-6 h-[60vh] overflow-y-auto">
-          <div className="space-y-4">
-            {messages.map((message, index) => (
-              <MessageBubble key={index} message={message} />
-            ))}
-            {isLoading && (
-              <div className="flex justify-center">
-                <LoadingDots />
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <Title level={1} style={{ textAlign: 'center', marginBottom: '2rem', color: '#4338ca' }}>
+            与疗愈导师对话
+          </Title>
 
-        {/* 输入区域 */}
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="请输入你的问题..."
-            className="flex-1 p-4 rounded-xl border border-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white/80 backdrop-blur-sm"
-          />
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="submit"
-            disabled={isLoading}
-            className="px-6 py-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-shadow disabled:opacity-50"
+          <Card 
+            styles={{ 
+              body: { 
+                height: '60vh',
+                overflow: 'auto',
+                padding: '1.5rem',
+                marginBottom: '1rem'
+              }
+            }}
           >
-            发送
-          </motion.button>
-        </form>
-      </div>
-    </main>
-  )
-}
+            <div className="space-y-4">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                    marginBottom: '1rem'
+                  }}
+                >
+                  <Card
+                    style={{
+                      maxWidth: '80%',
+                      background: message.role === 'user' ? '#4338ca' : '#fff',
+                      borderColor: message.role === 'user' ? '#4338ca' : '#e5e7eb',
+                    }}
+                    bodyStyle={{
+                      padding: '0.75rem 1rem',
+                    }}
+                  >
+                    <Paragraph
+                      style={{
+                        margin: 0,
+                        color: message.role === 'user' ? '#fff' : '#374151',
+                        whiteSpace: 'pre-line'
+                      }}
+                    >
+                      {message.content}
+                    </Paragraph>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        marginTop: '0.25rem',
+                        color: message.role === 'user' ? 'rgba(255,255,255,0.7)' : '#9CA3AF'
+                      }}
+                    >
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </div>
+                  </Card>
+                </div>
+              ))}
+              {isLoading && (
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <LoadingDots />
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </Card>
 
-function MessageBubble({ message }: { message: Message }) {
-  const isUser = message.role === 'user'
-  
-  return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div
-        className={`max-w-[80%] rounded-2xl p-4 ${
-          isUser
-            ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white'
-            : 'bg-white shadow-md text-gray-800'
-        }`}
-      >
-        <p className="whitespace-pre-line">{message.content}</p>
-        <div className={`text-xs mt-1 ${isUser ? 'text-purple-100' : 'text-gray-400'}`}>
-          {new Date(message.timestamp).toLocaleTimeString()}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
+            <TextArea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="请输入你的问题..."
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              style={{ flex: 1 }}
+            />
+            <Button
+              type="primary"
+              htmlType="submit"
+              disabled={isLoading}
+              style={{
+                height: 'auto',
+                background: 'linear-gradient(to right, #818cf8, #4338ca)',
+                border: 'none'
+              }}
+            >
+              发送
+            </Button>
+          </form>
         </div>
-      </div>
-    </div>
+      </Content>
+    </Layout>
   )
 }
 
 function LoadingDots() {
   return (
-    <div className="flex space-x-2">
-      <motion.div
-        className="w-2 h-2 bg-indigo-500 rounded-full"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
-      />
-      <motion.div
-        className="w-2 h-2 bg-indigo-500 rounded-full"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-      />
-      <motion.div
-        className="w-2 h-2 bg-indigo-500 rounded-full"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
-      />
+    <div style={{ display: 'flex', gap: '0.5rem' }}>
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: '#4338ca'
+          }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+        />
+      ))}
     </div>
   )
 } 

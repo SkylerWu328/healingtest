@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ant Design 主题覆盖 */
+:root {
+  --primary-color: #722ED1;
+  --link-color: #722ED1;
+  --success-color: #52C41A;
+  --warning-color: #FAAD14;
+  --error-color: #F5222D;
+  --font-size-base: 14px;
+  --heading-color: #262626;
+  --text-color: #595959;
+  --text-color-secondary: #8C8C8C;
+  --disabled-color: rgba(0, 0, 0, 0.25);
+  --border-radius-base: 8px;
+  --border-color-base: #D9D9D9;
+  --box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 自定义样式 */
+.ant-card {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ant-btn {
+  border-radius: 100px;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(to right, var(--primary-color), #8B5CF6);
+  border: none;
+}
+
+.ant-input {
+  border-radius: 8px;
+}
+
+/* 渐变背景动画 */
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.bg-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+} 

@@ -1,7 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
+import { Layout, Typography, Card, Radio, Button, Space, Progress } from 'antd'
 import { motion } from 'framer-motion'
+import type { RadioChangeEvent } from 'antd'
+import { useRouter } from 'next/navigation'
+
+const { Content } = Layout
+const { Title, Text } = Typography
 
 interface Question {
   id: number
@@ -69,115 +75,138 @@ const questions: Question[] = [
   // 可以继续添加更多问题...
 ]
 
-export default function ChakraTest() {
+export default function Test() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<{[key: number]: number}>({})
-  const [showResults, setShowResults] = useState(false)
+  const [answers, setAnswers] = useState<Record<number, number>>({})
+  const [selectedOption, setSelectedOption] = useState<number | null>(null)
 
-  const handleAnswer = (questionId: number, answerIndex: number) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: answerIndex
-    }))
-    
-    if (currentQuestion < questions.length - 1) {
+  const router = useRouter()
+
+  const handleOptionSelect = (e: RadioChangeEvent) => {
+    setSelectedOption(e.target.value)
+  }
+
+  const handleNext = () => {
+    if (selectedOption !== null) {
+      setAnswers(prev => ({
+        ...prev,
+        [currentQuestion]: selectedOption
+      }))
+      setSelectedOption(null)
       setCurrentQuestion(prev => prev + 1)
-    } else {
-      calculateResults()
     }
   }
 
-  const calculateResults = () => {
-    // 这里添加计算逻辑
-    setShowResults(true)
-    
-    // 保存结果到localStorage
-    const testResult = {
-      lastTest: new Date().toISOString(),
-      summary: '根据测试结果，你的脉轮整体状况良好，但心轮和喉轮需要更多关注...',
-      recommendations: [
-        '建议每天进行10分钟的冥想练习',
-        '可以尝试使用紫水晶来平衡顶轮能量',
-        '进行正念呼吸练习有助于开启心轮'
-      ],
-      energyBalance: [
-        '使用薰衣草精油帮助放松',
-        '佩戴海蓝宝石有助于表达',
-        '进行户外运动增强根轮能量'
-      ]
+  const handleSubmit = () => {
+    if (selectedOption !== null) {
+      const finalAnswers = {
+        ...answers,
+        [currentQuestion]: selectedOption
+      }
+      
+      // 计算每个脉轮的得分
+      const chakraScores = questions.map((question, index) => {
+        const score = ((4 - finalAnswers[index]) / 3) * 100 // 转换为百分比分数
+        return {
+          chakra: question.chakra,
+          score: Math.round(score),
+          suggestion: '' // 可以根据需要添加具体建议
+        }
+      })
+      
+      // 将结果编码并传递到结果页面
+      const encodedResults = encodeURIComponent(JSON.stringify(chakraScores))
+      router.push(`/test/result?results=${encodedResults}`)
     }
-    
-    localStorage.setItem('chakraTestResult', JSON.stringify(testResult))
   }
+
+  const progress = ((currentQuestion + 1) / questions.length) * 100
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-4 md:p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-indigo-800">
-          脉轮能量测试
-        </h1>
+    <Layout style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f5f3ff 0%, #e0e7ff 100%)' }}>
+      <Content style={{ padding: '2rem' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <Title level={1} style={{ textAlign: 'center', marginBottom: '2rem', color: '#4338ca' }}>
+            脉轮能量测试
+          </Title>
 
-        {!showResults ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
-          >
-            <div className="mb-6">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>问题 {currentQuestion + 1} / {questions.length}</span>
-                <span>完成度 {Math.round((currentQuestion / questions.length) * 100)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-purple-500 to-indigo-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(currentQuestion / questions.length) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <h2 className="text-xl font-semibold mb-6 text-gray-800">
-              {questions[currentQuestion].text}
-            </h2>
-
-            <div className="space-y-3">
-              {questions[currentQuestion].options.map((option, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleAnswer(questions[currentQuestion].id, index)}
-                  className="w-full text-left p-4 rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow border border-gray-100"
-                >
-                  {option}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
-          >
-            <h2 className="text-2xl font-semibold mb-6 text-indigo-800">测试完成！</h2>
-            <p className="text-gray-700 mb-4">
-              感谢你完成脉轮能量测试。根据你的答案，我们为你生成了详细的脉轮分析报告。
-            </p>
-            <p className="text-gray-700 mb-6">
-              你可以在主页查看完整的测试结果和个性化建议。
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/'}
-              className="w-full py-3 px-6 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-shadow"
+          <Card style={{ marginBottom: '2rem' }}>
+            <Progress 
+              percent={progress} 
+              showInfo={false}
+              strokeColor={{ 
+                '0%': '#818cf8',
+                '100%': '#4338ca'
+              }}
+              style={{ marginBottom: '2rem' }}
+            />
+            
+            <motion.div
+              key={currentQuestion}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
             >
-              返回主页查看结果
-            </motion.button>
-          </motion.div>
-        )}
-      </div>
-    </main>
+              <Title level={4} style={{ marginBottom: '1.5rem' }}>
+                {questions[currentQuestion].text}
+              </Title>
+
+              <Radio.Group
+                onChange={handleOptionSelect}
+                value={selectedOption}
+                style={{ width: '100%' }}
+              >
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  {questions[currentQuestion].options.map((option, index) => (
+                    <Radio 
+                      key={index} 
+                      value={index}
+                      style={{ 
+                        width: '100%',
+                        padding: '1rem',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '0.5rem',
+                        marginBottom: '0.5rem'
+                      }}
+                    >
+                      {option}
+                    </Radio>
+                  ))}
+                </Space>
+              </Radio.Group>
+            </motion.div>
+
+            <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+              {currentQuestion < questions.length - 1 ? (
+                <Button 
+                  type="primary" 
+                  onClick={handleNext}
+                  disabled={selectedOption === null}
+                  size="large"
+                >
+                  下一题
+                </Button>
+              ) : (
+                <Button 
+                  type="primary" 
+                  onClick={handleSubmit}
+                  disabled={selectedOption === null}
+                  size="large"
+                >
+                  完成测试
+                </Button>
+              )}
+            </div>
+          </Card>
+
+          <Card style={{ textAlign: 'center', background: 'rgba(255, 255, 255, 0.8)' }}>
+            <Text style={{ fontSize: '1.125rem' }}>
+              已完成 {currentQuestion + 1} / {questions.length} 题
+            </Text>
+          </Card>
+        </div>
+      </Content>
+    </Layout>
   )
 } 
